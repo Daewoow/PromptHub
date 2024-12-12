@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "dgSpecHash": "kcrXKncHMyVokax9XMsfak+95/uzOu1hYWvbEN2sXvyJALKhVXYCsRE3pL15/xeNJH9zCqyBxeSp9NrecgcT1g==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Lorem Ipsum\\Repositories\\PromptHub\\PromptHub\\API\\API.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\lambda2js.signed\\3.1.4\\lambda2js.signed.3.1.4.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\8.0.10\\microsoft.aspnetcore.jsonpatch.8.0.10.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.2\\microsoft.aspnetcore.openapi.8.0.2.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\6.0.0\\microsoft.extensions.logging.abstractions.6.0.0.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\microsoft.openapi\\1.4.3\\microsoft.openapi.1.4.3.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\nito.asyncex.coordination\\5.1.2\\nito.asyncex.coordination.5.1.2.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\nito.asyncex.tasks\\5.1.2\\nito.asyncex.tasks.5.1.2.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\nito.collections.deque\\1.1.1\\nito.collections.deque.1.1.1.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\nito.disposables\\2.2.1\\nito.disposables.2.2.1.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\pipelines.sockets.unofficial\\2.2.8\\pipelines.sockets.unofficial.2.2.8.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\ravendb.client\\6.2.1\\ravendb.client.6.2.1.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\stackexchange.redis\\2.8.22\\stackexchange.redis.2.8.22.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\swashbuckle.aspnetcore\\6.4.0\\swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.4.0\\swashbuckle.aspnetcore.swagger.6.4.0.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.4.0\\swashbuckle.aspnetcore.swaggergen.6.4.0.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.4.0\\swashbuckle.aspnetcore.swaggerui.6.4.0.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\system.collections.immutable\\1.7.1\\system.collections.immutable.1.7.1.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\system.io.pipelines\\5.0.1\\system.io.pipelines.5.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

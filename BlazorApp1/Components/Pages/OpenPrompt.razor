@@ -1,0 +1,48 @@
+﻿@page "/openitem/{Id}"
+@using BlazorApp1.Models
+@using BlazorApp1.Services
+@inject PromptServices PromptService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<h3>Open Prompt</h3>
+
+@if (openPrompt == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div>
+        <button class="btn btn-secondary mb-3" @onclick="NavigateToPromptsList">← Back to Prompts List</button>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Prompt Details</h5>
+
+                <p><strong>Name of User:</strong> @openPrompt.NameOfUser</p>
+                <p><strong>Name of Prompt:</strong> @openPrompt.NameOfPrompt</p>
+                <p><strong>Last Updated:</strong> @openPrompt.TimeOfUpdate.ToString("g")</p>
+                <p><strong>Description:</strong> @openPrompt.Description</p>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    private Prompt openPrompt;
+
+    // Загрузка данных при инициализации
+    protected override async Task OnInitializedAsync()
+    {
+        openPrompt = await PromptService.ReadPromptAsync(Id);
+    }
+
+    // Метод для возврата на список
+    private void NavigateToPromptsList()
+    {
+        NavigationManager.NavigateTo("/promptslist");
+    }
+}

@@ -1,0 +1,47 @@
+﻿@page "/createprompt"
+@using BlazorApp1.Infrastructure
+@using BlazorApp1.Models
+@using BlazorApp1.Services
+@inject PromptServices PromptService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+<h3>Create New Prompt</h3>
+
+<EditForm EditContext="@editContext" Model="newPrompt" FormName="Create New Task" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label for="nameOfUser">NameOfUser: </label>
+        <InputText id="nameOfUser" class="form-control" @bind-Value="newPrompt.NameOfUser" />
+    </div>
+    <div>
+        <label for="nameOfPrompt">NameOfPrompt: </label>
+        <InputText id="nameOfPrompt" class="form-control" @bind-Value="newPrompt.NameOfPrompt" />
+    </div>
+    <div>
+        <label for="description">Description: </label>
+        <InputText  id="description" class="form-control" @bind-Value="newPrompt.Description" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+@code {
+    private Prompt newPrompt = new();
+    private EditContext editContext;
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            newPrompt.TimeOfUpdate = DateTime.Now;
+            await PromptService.CreatePromptAsync(newPrompt);
+            NavigationManager.NavigateTo("/promptslist");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            throw;
+        }
+    }
+}

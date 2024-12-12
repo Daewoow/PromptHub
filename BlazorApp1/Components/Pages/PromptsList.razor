@@ -1,0 +1,99 @@
+﻿@page "/promptslist"
+@using BlazorApp1.Infrastructure
+@using BlazorApp1.Models
+@using BlazorApp1.Services
+@inject PromptServices PromptService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<h3>Prompts List</h3>
+
+@if (PromptItems == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>NameOfUser</th>
+        <th>NameOfTitle</th>
+        <th>TimeOfUpdate</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (PromptItems == null)
+    {
+        <tr>
+            <td colspan="4" class="text-center">Loading...</td>
+        </tr>
+    }
+    else if (PromptItems.Count == 0)
+    {
+        <tr>
+            <td colspan="4" class="text-center">No prompts available.</td>
+        </tr>
+    }
+    else
+    {
+        @foreach (var prompt in PromptItems)
+        {
+            <tr>
+                <td>@prompt.NameOfUser</td>
+                <td>@prompt.NameOfPrompt</td>
+                <td>@prompt.TimeOfUpdate.ToShortDateString()</td>
+                <td>
+                    <button class="bth btn-success btn-sm" @onclick="() => OpenPrompt(prompt.Id)">Open</button>
+                    <button class="btn btn-info btn-sm" @onclick="() => EditPrompt(prompt.Id)">Edit</button>
+                    <button class="btn btn-danger btn-sm" @onclick="() => DeletePrompt(prompt.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+<button class="btn btn-info" @onclick="CreatePrompt">Create</button>
+}
+
+@code 
+{
+    private List<Prompt> PromptItems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        PromptItems = await PromptService.ReadAllAsync();
+    }
+
+    private void CreatePrompt()
+    {
+        NavigationManager.NavigateTo("/createprompt");
+    }
+
+    private void OpenPrompt(string id)
+    {
+        NavigationManager.NavigateTo($"/openitem/{id}");
+    }
+
+    private void EditPrompt(string id)
+    {
+        // Redirect to edit item page
+        NavigationManager.NavigateTo($"/edititem/{id}");
+    }
+
+    private async Task DeletePrompt(string id)
+    { 
+        await PromptService.DeletePromptAsync(id);
+        PromptItems = await PromptService.ReadAllAsync();
+        var lastId = Counter.FirstFreeId;
+        foreach (var prompt in PromptItems.Where(prompt => int.Parse(prompt.Id) >= int.Parse(id)))
+        {
+            prompt.Id = (int.Parse(prompt.Id) - 1).ToString();
+            lastId = int.Parse(prompt.Id);
+        }
+
+        Counter.UpdateLast(lastId);
+
+    }
+}
