@@ -1,5 +1,4 @@
 ﻿@page "/createprompt"
-@using BlazorApp1.Infrastructure
 @using BlazorApp1.Models
 @using BlazorApp1.Services
 @inject PromptServices PromptService
@@ -34,7 +33,7 @@
     {
         try
         {
-            newPrompt.TimeOfUpdate = DateTime.Now;
+            newPrompt.TimeOfUpdate = DateTime.Now.ToUniversalTime();
             await PromptService.CreatePromptAsync(newPrompt);
             NavigationManager.NavigateTo("/promptslist");
         }

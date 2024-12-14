@@ -1,54 +1,46 @@
-﻿using Raven.Client.Documents;
+﻿using System.Runtime.Intrinsics.Arm;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication1;
 
-public class CrudRepository(IDocumentStore store)
+public class CrudRepository
 {
     public async Task Create(Prompt prompt)
     {
-        using var session = store.OpenAsyncSession();
+        await using var db = new ApplicationContext();
 
-        var existingPrompts = await session.Query<Prompt>().ToListAsync();
-        var newId = existingPrompts.Any() 
-            ? Enumerable.Range(1, int.MaxValue).Except(existingPrompts
-                .Select(p => int.Parse(p.Id)))
-                .First()
-            : 1;
-
-        prompt.Id = newId.ToString();
-        
-        Console.WriteLine(newId);
-
-        await session.StoreAsync(prompt);
-        await session.SaveChangesAsync();
+        db.Prompts.Add(prompt);
+        await db.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<Prompt>> ReadAll()
     {
-        using var session = store.OpenAsyncSession();
-        return await session.Query<Prompt>().ToListAsync();
+        await using var db = new ApplicationContext();
+        return await db.Prompts.ToListAsync();
     }
 
-    public async Task<Prompt> ReadById(string id)
+    public async Task<Prompt> ReadById(int id)
     {
-        using var session = store.OpenAsyncSession();
-        return await session.LoadAsync<Prompt>(id);
+        await using var db = new ApplicationContext();
+        return await db.Prompts.FirstOrDefaultAsync(prompt => prompt.Id == id);
     }
 
     public async Task Update(Prompt prompt)
     {
-        using var session = store.OpenAsyncSession();
-        session.Advanced.Patch(prompt, x => x.NameOfUser, prompt.NameOfUser);
-        session.Advanced.Patch(prompt, x => x.NameOfPrompt, prompt.NameOfPrompt);
-        session.Advanced.Patch(prompt, x => x.TimeOfUpdate, DateTime.Now);
-        session.Advanced.Patch(prompt, x => x.Description, prompt.Description);
-        await session.SaveChangesAsync();
+        await using var db = new ApplicationContext();
+        var dbPrompt = db.Prompts.FirstOrDefault(p => p.Id == prompt.Id);
+        dbPrompt.NameOfUser = prompt.NameOfUser;
+        dbPrompt.NameOfPrompt = prompt.NameOfPrompt;
+        dbPrompt.Description = prompt.Description;
+        dbPrompt.TimeOfUpdate = DateTime.Now;
+        await db.SaveChangesAsync();
     }
 
-    public async Task Delete(string id)
+    public async Task Delete(int id)
     {
-        using var session = store.OpenAsyncSession();
-        session.Delete(id);
-        await session.SaveChangesAsync();
+        await using var db = new ApplicationContext();
+        var dbPrompt = db.Prompts.FirstOrDefault(p => p.Id == id);
+        db.Prompts.Remove(dbPrompt);
+        await db.SaveChangesAsync();
     }
 }

@@ -41,7 +41,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        editPrompt = await PromptService.ReadPromptAsync(Id);
+        editPrompt = await PromptService.ReadPromptAsync(int.Parse(Id));
     }
 
     private async Task HandleValidSubmit()

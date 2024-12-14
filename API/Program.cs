@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Raven.Client.Documents;
 using StackExchange.Redis;
 using WebApplication1;
 using WebApplication1.Cache;
@@ -12,14 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var store = new DocumentStore
-{
-    Urls = ["http://localhost:8080"],
-    Database = "Prompts"
-};
-
-store.Initialize();
-builder.Services.AddSingleton<IDocumentStore>(store);
 builder.Services.AddScoped<CrudRepository>();
 builder.Services.AddScoped<CacheService>();
 builder.Services.AddScoped<PromptService>();
@@ -43,9 +34,9 @@ app.MapPut("api/todo", async ([FromBody] Prompt item, [FromServices] PromptServi
     => await toDoService.UpdateAsync(item));
  
 app.MapGet("api/todo/{id}", async (string id, [FromServices] PromptService toDoService) 
-    => await toDoService.ReadByIdAsync(id));
+    => await toDoService.ReadByIdAsync(int.Parse(id)));
  
 app.MapDelete("api/todo/{id}", async (string id, [FromServices] PromptService toDoService)
-    => await toDoService.DeleteAsync(id));
+    => await toDoService.DeleteAsync(int.Parse(id)));
     
 app.Run();

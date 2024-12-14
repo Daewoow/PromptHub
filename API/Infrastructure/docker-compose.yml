@@ -1,11 +1,39 @@
 ﻿version: '3.8'
 
 services:
-  ravendb:
-    image: ravendb/ravendb:latest
+  postgres:
+    container_name: postgres_container
+    image: postgres:17.2
+    environment:
+      POSTGRES_DB: "PromptsBase"
+      POSTGRES_PASSWORD: "ifconfigroute-n"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ../2. Init Database:/docker-entrypoint-initdb.d
+      - PromptsBase-data:/var/lib/postgresql/data
     ports:
-      - "8080:8080"
-
+      - "5432:5432"
+      
+  pgadmin:
+    container_name: pgadmin_container
+    image: 'dpage/pgadmin4:7.2'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "habrpguser@habr.com"
+      PGADMIN_DEFAULT_PASSWORD: "ipconfigroute-n"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+    networks:
+      - postgres
+  
   garnet:
     image: 'ghcr.io/microsoft/garnet'
     ulimits:
@@ -16,5 +44,10 @@ services:
       - garnetdata:/data
 
 volumes:
-  ravendb_data:
+  PromptsBase-data:
   garnetdata:
+  pgadmin-data:
+
+networks:
+  postgres:
+    driver: bridge

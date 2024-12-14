@@ -13,7 +13,7 @@ public class PromptService(CrudRepository repository, CacheService cacheService)
     public async Task<IEnumerable<Prompt>> ReadAllAsync() => 
         await cacheService.GetOrAdd("User:all", async () => await repository.ReadAll(), 30);
 
-    public async Task<Prompt> ReadByIdAsync(string id) 
+    public async Task<Prompt> ReadByIdAsync(int id) 
         => await cacheService.GetOrAdd($"User:{id}", 
             async () => await repository.ReadById(id), 30);
 
@@ -24,7 +24,7 @@ public class PromptService(CrudRepository repository, CacheService cacheService)
         await cacheService.Invalidate($"User:all");
     }
 
-    public async Task DeleteAsync(string id)
+    public async Task DeleteAsync(int id)
     {
         await repository.Delete(id);
         await cacheService.Invalidate($"User:{id}");

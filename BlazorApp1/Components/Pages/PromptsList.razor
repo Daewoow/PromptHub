@@ -1,5 +1,4 @@
 ﻿@page "/promptslist"
-@using BlazorApp1.Infrastructure
 @using BlazorApp1.Models
 @using BlazorApp1.Services
 @inject PromptServices PromptService
@@ -43,7 +42,7 @@ else
             <tr>
                 <td>@prompt.NameOfUser</td>
                 <td>@prompt.NameOfPrompt</td>
-                <td>@prompt.TimeOfUpdate.ToShortDateString()</td>
+                <td>@prompt.TimeOfUpdate.ToString()</td>
                 <td>
                     <button class="bth btn-success btn-sm" @onclick="() => OpenPrompt(prompt.Id)">Open</button>
                     <button class="btn btn-info btn-sm" @onclick="() => EditPrompt(prompt.Id)">Edit</button>
@@ -71,29 +70,15 @@ else
         NavigationManager.NavigateTo("/createprompt");
     }
 
-    private void OpenPrompt(string id)
+    private void OpenPrompt(int id)
     {
         NavigationManager.NavigateTo($"/openitem/{id}");
     }
 
-    private void EditPrompt(string id)
+    private void EditPrompt(int id)
     {
-        // Redirect to edit item page
         NavigationManager.NavigateTo($"/edititem/{id}");
     }
 
-    private async Task DeletePrompt(string id)
-    { 
-        await PromptService.DeletePromptAsync(id);
-        PromptItems = await PromptService.ReadAllAsync();
-        var lastId = Counter.FirstFreeId;
-        foreach (var prompt in PromptItems.Where(prompt => int.Parse(prompt.Id) >= int.Parse(id)))
-        {
-            prompt.Id = (int.Parse(prompt.Id) - 1).ToString();
-            lastId = int.Parse(prompt.Id);
-        }
-
-        Counter.UpdateLast(lastId);
-
-    }
+    private async Task DeletePrompt(int id) => await PromptService.DeletePromptAsync(id);
 }

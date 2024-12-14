@@ -4,7 +4,7 @@ namespace BlazorApp1.Models;
 
 public class Prompt
 {
-    public string Id { get; set; }
+    public int Id { get; set; }
     [Required]
     public string NameOfPrompt { get; set; }
     [Required]
