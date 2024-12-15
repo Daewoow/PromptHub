@@ -1,0 +1,106 @@
+﻿@page "/myprompts"
+@using System.IdentityModel.Tokens.Jwt
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@using BlazorApp1.Models
+@using BlazorApp1.Services
+@using Microsoft.AspNetCore.Authentication
+@inject IJSRuntime JSRuntime
+@inject UIPromptService UiPromptService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<h3>My Prompts</h3>
+
+@if (PromptItems == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>NameOfUIUser</th>
+        <th>NameOfTitle</th>
+        <th>TimeOfUpdate</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (PromptItems == null)
+    {
+    <tr>
+        <td colspan="4" class="text-center">Loading...</td>
+    </tr>
+    }
+    else if (PromptItems.Count == 0)
+    {
+    <tr>
+        <td colspan="4" class="text-center">No prompts available.</td>
+    </tr>
+    }
+    else
+    {
+    @foreach (var prompt in PromptItems.Where(prompt => prompt.NameOfUser == name))
+    {
+    <tr>
+        <td>@prompt.NameOfUser</td>
+        <td>@prompt.NameOfPrompt</td>
+        <td>@prompt.TimeOfUpdate.ToString()</td>
+        <td>
+            <button class="bth btn-success btn-sm" @onclick="() => OpenPrompt(prompt.PromptId)">Open</button>
+            <button class="btn btn-info btn-sm" @onclick="() => EditPrompt(prompt.PromptId)">Edit</button>
+            <button class="btn btn-danger btn-sm" @onclick="() => DeletePrompt(prompt.PromptId)">Delete</button>
+        </td>
+    </tr>
+    }
+    }
+    </tbody>
+</table>
+<button class="btn btn-info" @onclick="CreatePrompt">Create</button>
+}
+
+@code 
+{
+    private List<UIPrompt> PromptItems;
+    private string name;
+
+    protected override async Task OnInitializedAsync()
+    {
+        PromptItems = await UiPromptService.ReadAllAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstAlert)
+    {
+        if (firstAlert)
+        {
+            var token = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", "jwtToken");
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(token);
+            var nameStringArray = jsonToken.Claims
+                .First().ToString()
+                .Split(" ")
+                .Skip(1);
+
+            name = string.Join(" ", nameStringArray);
+        }
+    }
+    
+    private void CreatePrompt()
+    {
+        NavigationManager.NavigateTo("/createprompt");
+    }
+    
+    private void OpenPrompt(int id)
+    {
+        NavigationManager.NavigateTo($"/openitem/{id}");
+    }
+    
+    private void EditPrompt(int id)
+    {
+        NavigationManager.NavigateTo($"/edititem/{id}");
+    }
+    
+    private async Task DeletePrompt(int id) => await UiPromptService.DeletePromptAsync(id);
+}

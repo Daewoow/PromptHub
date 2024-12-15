@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication1;
 
-public class CrudRepository
+public class PromptsCrudRepository
 {
-    public async Task Create(Prompt prompt)
+    public async Task CreatePrompt(Prompt prompt)
     {
         await using var db = new ApplicationContext();
 
@@ -13,22 +13,22 @@ public class CrudRepository
         await db.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<Prompt>> ReadAll()
+    public async Task<IEnumerable<Prompt>> ReadAllPrompts()
     {
         await using var db = new ApplicationContext();
         return await db.Prompts.ToListAsync();
     }
 
-    public async Task<Prompt> ReadById(int id)
+    public async Task<Prompt> ReadPromptById(int id)
     {
         await using var db = new ApplicationContext();
-        return await db.Prompts.FirstOrDefaultAsync(prompt => prompt.Id == id);
+        return await db.Prompts.FirstOrDefaultAsync(prompt => prompt.PromptId == id);
     }
 
-    public async Task Update(Prompt prompt)
+    public async Task UpdatePrompt(Prompt prompt)
     {
         await using var db = new ApplicationContext();
-        var dbPrompt = db.Prompts.FirstOrDefault(p => p.Id == prompt.Id);
+        var dbPrompt = db.Prompts.FirstOrDefault(u => u.PromptId == prompt.PromptId);
         dbPrompt.NameOfUser = prompt.NameOfUser;
         dbPrompt.NameOfPrompt = prompt.NameOfPrompt;
         dbPrompt.Description = prompt.Description;
@@ -36,10 +36,10 @@ public class CrudRepository
         await db.SaveChangesAsync();
     }
 
-    public async Task Delete(int id)
+    public async Task DeletePrompt(int id)
     {
         await using var db = new ApplicationContext();
-        var dbPrompt = db.Prompts.FirstOrDefault(p => p.Id == id);
+        var dbPrompt = db.Prompts.FirstOrDefault(u => u.PromptId == id);
         db.Prompts.Remove(dbPrompt);
         await db.SaveChangesAsync();
     }

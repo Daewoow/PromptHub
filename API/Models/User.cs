@@ -2,7 +2,7 @@
 
 public class User
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public List<Prompt> Prompts { get; set; }
+    public int UserId { get; set; }
+    public string UserName { get; set; }
+    public string UserPassword { get; set; }
 }

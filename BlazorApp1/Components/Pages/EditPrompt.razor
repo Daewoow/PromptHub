@@ -1,33 +1,35 @@
 ﻿@page "/edititem/{Id}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 @using BlazorApp1.Models
 @using BlazorApp1.Services
-@inject PromptServices PromptService
+@inject UIPromptService UiPromptService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<h3>Edit Prompt</h3>
+<h3>Edit UIPrompt</h3>
 
-@if (editPrompt == null)
+@if (_editUiPrompt == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <EditForm Model="editPrompt" FormName="Edit Form" OnValidSubmit="HandleValidSubmit">
+    <EditForm Model="_editUiPrompt" FormName="Edit Form" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
         <div>
-            <label>NameOfUser: </label>
-            <InputText class="form-control" id="nameOfUser" @bind-Value="editPrompt.NameOfUser" />
+            <label>NameOfUIUser: </label>
+            <InputText class="form-control" id="nameOfUser" @bind-Value="_editUiPrompt.NameOfUser" />
         </div>
         <div>
-            <label>NameOfPrompt: </label>
-            <InputText class="form-control" id="nameOfPrompt" @bind-Value="editPrompt.NameOfPrompt" />
+            <label>NameOfUIPrompt: </label>
+            <InputText class="form-control" id="nameOfPrompt" @bind-Value="_editUiPrompt.NameOfPrompt" />
         </div>
         <div>
             <label>Description: </label>
-            <InputText class="form-control" id="description" @bind-Value="editPrompt.Description" />
+            <InputText class="form-control" id="description" @bind-Value="_editUiPrompt.Description" />
         </div>
 
         <button class="btn btn-primary" type="submit">Save</button>
@@ -37,17 +39,17 @@ else
 @code {
     [Parameter]
     public string Id { get; set; }
-    private Prompt editPrompt;
+    private UIPrompt _editUiPrompt;
 
     protected override async Task OnInitializedAsync()
     {
-        editPrompt = await PromptService.ReadPromptAsync(int.Parse(Id));
+        _editUiPrompt = await UiPromptService.ReadPromptAsync(int.Parse(Id));
     }
 
     private async Task HandleValidSubmit()
     {
-        editPrompt.TimeOfUpdate = DateTime.Now;
-        await PromptService.UpdatePromptAsync(editPrompt);
+        _editUiPrompt.TimeOfUpdate = DateTime.Now;
+        await UiPromptService.UpdatePromptAsync(_editUiPrompt);
         NavigationManager.NavigateTo("/promptslist");
     }
 }

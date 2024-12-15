@@ -2,12 +2,11 @@
 
 namespace BlazorApp1.Models;
 
-public class Prompt
+public class UIPrompt
 {
-    public int Id { get; set; }
+    public int PromptId { get; set; }
     [Required]
     public string NameOfPrompt { get; set; }
-    [Required]
     public string NameOfUser { get; set; }
     [Required]
     public string Description { get; set; }

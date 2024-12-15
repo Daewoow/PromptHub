@@ -2,32 +2,32 @@
 
 namespace WebApplication1.Services;
 
-public class PromptService(CrudRepository repository, CacheService cacheService)
+public class PromptService(PromptsCrudRepository repository, CacheService cacheService)
 {
     public async Task CreateAsync(Prompt prompt)
     {
-        await repository.Create(prompt);
-        await cacheService.Invalidate($"User:all");
+        await repository.CreatePrompt(prompt);
+        await cacheService.Invalidate($"Prompt:all");
     }
 
     public async Task<IEnumerable<Prompt>> ReadAllAsync() => 
-        await cacheService.GetOrAdd("User:all", async () => await repository.ReadAll(), 30);
+        await cacheService.GetOrAdd("Prompt:all", async () => await repository.ReadAllPrompts(), 30);
 
     public async Task<Prompt> ReadByIdAsync(int id) 
-        => await cacheService.GetOrAdd($"User:{id}", 
-            async () => await repository.ReadById(id), 30);
+        => await cacheService.GetOrAdd($"Prompt:{id}", 
+            async () => await repository.ReadPromptById(id), 30);
 
     public async Task UpdateAsync(Prompt prompt)
     {
-        await repository.Update(prompt);
-        await cacheService.Invalidate($"User:{prompt.Id}");
-        await cacheService.Invalidate($"User:all");
+        await repository.UpdatePrompt(prompt);
+        await cacheService.Invalidate($"Prompt:{prompt.PromptId}");
+        await cacheService.Invalidate($"Prompt:all");
     }
 
     public async Task DeleteAsync(int id)
     {
-        await repository.Delete(id);
-        await cacheService.Invalidate($"User:{id}");
-        await cacheService.Invalidate("User:all");
+        await repository.DeletePrompt(id);
+        await cacheService.Invalidate($"Prompt:{id}");
+        await cacheService.Invalidate("Prompt:all");
     }
 }

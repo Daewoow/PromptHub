@@ -1,40 +1,58 @@
 ﻿@page "/createprompt"
+@attribute [Authorize]
+@using System.IdentityModel.Tokens.Jwt
 @using BlazorApp1.Models
 @using BlazorApp1.Services
-@inject PromptServices PromptService
+@using Microsoft.AspNetCore.Authorization
+@inject UIPromptService UiPromptService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 <h3>Create New Prompt</h3>
 
-<EditForm EditContext="@editContext" Model="newPrompt" FormName="Create New Task" OnValidSubmit="HandleValidSubmit">
+<EditForm EditContext="@editContext" Model="_newUiPrompt" FormName="Create New Task" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
     <div>
-        <label for="nameOfUser">NameOfUser: </label>
-        <InputText id="nameOfUser" class="form-control" @bind-Value="newPrompt.NameOfUser" />
-    </div>
-    <div>
-        <label for="nameOfPrompt">NameOfPrompt: </label>
-        <InputText id="nameOfPrompt" class="form-control" @bind-Value="newPrompt.NameOfPrompt" />
+        <label for="nameOfPrompt">NameOfUIPrompt: </label>
+        <InputText id="nameOfPrompt" class="form-control" @bind-Value="_newUiPrompt.NameOfPrompt" />
     </div>
     <div>
         <label for="description">Description: </label>
-        <InputText  id="description" class="form-control" @bind-Value="newPrompt.Description" />
+        <InputText  id="description" class="form-control" @bind-Value="_newUiPrompt.Description" />
     </div>
 
     <button type="submit" class="btn btn-primary">Save</button>
 </EditForm>
 
 @code {
-    private Prompt newPrompt = new();
+    private UIPrompt _newUiPrompt = new();
     private EditContext editContext;
+    private string name;
+    
+    protected override async Task OnAfterRenderAsync(bool firstAlert)
+    {
+        if (firstAlert)
+        {
+            var token = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", "jwtToken");
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(token);
+            var nameStringArray = jsonToken.Claims
+                .First().ToString()
+                .Split(" ")
+                .Skip(1);
+
+            name = string.Join(" ", nameStringArray);
+        }
+    }
 
     private async Task HandleValidSubmit()
     {
         try
         {
-            newPrompt.TimeOfUpdate = DateTime.Now.ToUniversalTime();
-            await PromptService.CreatePromptAsync(newPrompt);
+            _newUiPrompt.NameOfUser = name;
+            _newUiPrompt.TimeOfUpdate = DateTime.Now.ToUniversalTime();
+            await UiPromptService.CreatePromptAsync(_newUiPrompt);
             NavigationManager.NavigateTo("/promptslist");
         }
         catch (Exception ex)

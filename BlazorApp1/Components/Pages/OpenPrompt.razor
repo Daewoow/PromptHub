@@ -1,29 +1,31 @@
 ﻿@page "/openitem/{Id}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 @using BlazorApp1.Models
 @using BlazorApp1.Services
-@inject PromptServices PromptService
+@inject UIPromptService UiPromptService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<h3>Open Prompt</h3>
+<h3>Open UIPrompt</h3>
 
-@if (openPrompt == null)
+@if (_openUiPrompt == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
     <div>
-        <button class="btn btn-secondary mb-3" @onclick="NavigateToPromptsList">← Back to Prompts List</button>
+        <button class="btn btn-secondary mb-3" @onclick="NavigateToPromptsList">← Back to UIPrompts List</button>
 
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Prompt Details</h5>
+                <h5 class="card-title">UIPrompt Details</h5>
 
-                <p><strong>Name of User:</strong> @openPrompt.NameOfUser</p>
-                <p><strong>Name of Prompt:</strong> @openPrompt.NameOfPrompt</p>
-                <p><strong>Last Updated:</strong> @openPrompt.TimeOfUpdate.ToString("g")</p>
-                <p><strong>Description:</strong> @openPrompt.Description</p>
+                <p><strong>Name of UIUser:</strong> @_openUiPrompt.NameOfUser</p>
+                <p><strong>Name of UIPrompt:</strong> @_openUiPrompt.NameOfPrompt</p>
+                <p><strong>Last Updated:</strong> @_openUiPrompt.TimeOfUpdate.ToString("g")</p>
+                <p><strong>Description:</strong> @_openUiPrompt.Description</p>
             </div>
         </div>
     </div>
@@ -32,12 +34,12 @@ else
 @code {
     [Parameter]
     public int Id { get; set; }
-    private Prompt openPrompt;
+    private UIPrompt _openUiPrompt;
 
     // Загрузка данных при инициализации
     protected override async Task OnInitializedAsync()
     {
-        openPrompt = await PromptService.ReadPromptAsync(Id);
+        _openUiPrompt = await UiPromptService.ReadPromptAsync(Id);
     }
 
     // Метод для возврата на список

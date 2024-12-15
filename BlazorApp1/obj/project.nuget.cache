@@ -1,8 +1,17 @@
 {
   "version": 2,
-  "dgSpecHash": "fYryeY9W4mDw6tFwUrwWUCPoqUJ4vj05Kw9nsARbm69AAa18VjZnDreclZW7SdLP2c0minN0Jx8S/cscEiw7HQ==",
+  "dgSpecHash": "zf1iY88vICxMow1T1UPd55xwqANVoWcCQ+FI7lNjrtGHuCWIL3JJ4+FieS1oVJF1aaCeqdc/z3CREb4V4HcmMA==",
   "success": true,
   "projectFilePath": "C:\\Users\\Lorem Ipsum\\Repositories\\PromptHub\\PromptHub\\BlazorApp1\\BlazorApp1.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.11\\microsoft.aspnetcore.authentication.jwtbearer.8.0.11.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\microsoft.identitymodel.abstractions\\7.1.2\\microsoft.identitymodel.abstractions.7.1.2.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\7.1.2\\microsoft.identitymodel.jsonwebtokens.7.1.2.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\microsoft.identitymodel.logging\\7.1.2\\microsoft.identitymodel.logging.7.1.2.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\microsoft.identitymodel.protocols\\7.1.2\\microsoft.identitymodel.protocols.7.1.2.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\microsoft.identitymodel.protocols.openidconnect\\7.1.2\\microsoft.identitymodel.protocols.openidconnect.7.1.2.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\microsoft.identitymodel.tokens\\7.1.2\\microsoft.identitymodel.tokens.7.1.2.nupkg.sha512",
+    "C:\\Users\\Lorem Ipsum\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.1.2\\system.identitymodel.tokens.jwt.7.1.2.nupkg.sha512"
+  ],
   "logs": []
 }

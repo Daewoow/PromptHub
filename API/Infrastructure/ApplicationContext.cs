@@ -4,6 +4,7 @@ using WebApplication1;
 public class ApplicationContext : DbContext
 {
     public DbSet<Prompt> Prompts { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
  
     public ApplicationContext() => Database.EnsureCreated();
 
