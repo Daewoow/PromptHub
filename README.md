@@ -1,2 +1,2 @@
-# PromptsHub
+# PromptHub
 Legendary project
