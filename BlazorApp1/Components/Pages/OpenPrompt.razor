@@ -33,16 +33,14 @@ else
 
 @code {
     [Parameter]
-    public int Id { get; set; }
+    public string Id { get; set; }
     private UIPrompt _openUiPrompt;
 
-    // Загрузка данных при инициализации
     protected override async Task OnInitializedAsync()
     {
-        _openUiPrompt = await UiPromptService.ReadPromptAsync(Id);
+        _openUiPrompt = await UiPromptService.ReadPromptAsync(int.Parse(Id));
     }
 
-    // Метод для возврата на список
     private void NavigateToPromptsList()
     {
         NavigationManager.NavigateTo("/promptslist");

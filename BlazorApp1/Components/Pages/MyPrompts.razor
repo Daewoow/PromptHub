@@ -4,15 +4,19 @@
 @attribute [Authorize]
 @using BlazorApp1.Models
 @using BlazorApp1.Services
-@using Microsoft.AspNetCore.Authentication
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime JsRuntime
 @inject UIPromptService UiPromptService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 <h3>My Prompts</h3>
 
-@if (PromptItems == null)
+<div class="mb-3">
+    <label for="searchInput" class="form-label">Search:</label>
+    <input id="searchInput" class="form-control" @bind="searchQuery" placeholder="Enter prompt name or user name..." />
+</div>
+
+@if (_promptItems == null)
 {
 <p><em>Loading...</em></p>
 }
@@ -21,20 +25,20 @@ else
 <table class="table table-striped">
     <thead>
     <tr>
-        <th>NameOfUIUser</th>
-        <th>NameOfTitle</th>
-        <th>TimeOfUpdate</th>
-        <th>Actions</th>
+        <th>Имя пользователя</th>
+        <th>Имя промпта</th>
+        <th>Время обновления</th>
+        <th>Опции</th>
     </tr>
     </thead>
     <tbody>
-    @if (PromptItems == null)
+    @if (_promptItems == null)
     {
     <tr>
         <td colspan="4" class="text-center">Loading...</td>
     </tr>
     }
-    else if (PromptItems.Count == 0)
+    else if (_promptItems.Count == 0 || FilteredPrompts.Count() == 0)
     {
     <tr>
         <td colspan="4" class="text-center">No prompts available.</td>
@@ -42,16 +46,16 @@ else
     }
     else
     {
-    @foreach (var prompt in PromptItems.Where(prompt => prompt.NameOfUser == name))
+    @foreach (var prompt in FilteredPrompts)
     {
     <tr>
         <td>@prompt.NameOfUser</td>
         <td>@prompt.NameOfPrompt</td>
         <td>@prompt.TimeOfUpdate.ToString()</td>
         <td>
-            <button class="bth btn-success btn-sm" @onclick="() => OpenPrompt(prompt.PromptId)">Open</button>
+            <button class="btn btn-success btn-sm" @onclick="() => OpenPrompt(prompt.PromptId)">Open</button>
             <button class="btn btn-info btn-sm" @onclick="() => EditPrompt(prompt.PromptId)">Edit</button>
-            <button class="btn btn-danger btn-sm" @onclick="() => DeletePrompt(prompt.PromptId)">Delete</button>
+            <button class="btn btn-danger btn-sm" @onclick="() => ConfirmDelete(prompt.PromptId)">Delete</button>
         </td>
     </tr>
     }
@@ -63,19 +67,29 @@ else
 
 @code 
 {
-    private List<UIPrompt> PromptItems;
-    private string name;
+    private List<UIPrompt> _promptItems;
+    private string _name;
+    private string searchQuery = string.Empty;
+    
+    private IEnumerable<UIPrompt> FilteredPrompts =>
+        string.IsNullOrWhiteSpace(searchQuery)
+        ? _promptItems.Where(p => p.NameOfUser == _name)
+        : _promptItems
+        .Where(p => p.NameOfUser == _name)
+        .Where(p =>
+                p.NameOfPrompt.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                p.NameOfUser.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {
-        PromptItems = await UiPromptService.ReadAllAsync();
+    _promptItems = await UiPromptService.ReadAllAsync();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstAlert)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstAlert)
+        if (firstRender)
         {
-            var token = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", "jwtToken");
+            var token = await JsRuntime.InvokeAsync<string?>("localStorage.getItem", "jwtToken");
             var handler = new JwtSecurityTokenHandler();
             var jsonToken = handler.ReadJwtToken(token);
             var nameStringArray = jsonToken.Claims
@@ -83,24 +97,36 @@ else
                 .Split(" ")
                 .Skip(1);
 
-            name = string.Join(" ", nameStringArray);
+            _name = string.Join(" ", nameStringArray);
         }
     }
-    
+
     private void CreatePrompt()
     {
         NavigationManager.NavigateTo("/createprompt");
     }
-    
+
     private void OpenPrompt(int id)
     {
         NavigationManager.NavigateTo($"/openitem/{id}");
     }
-    
+
     private void EditPrompt(int id)
     {
         NavigationManager.NavigateTo($"/edititem/{id}");
     }
-    
-    private async Task DeletePrompt(int id) => await UiPromptService.DeletePromptAsync(id);
+
+    private async Task DeletePrompt(int id)
+    {
+        await UiPromptService.DeletePromptAsync(id);
+        _promptItems = await UiPromptService.ReadAllAsync();
+    }
+
+    private async Task ConfirmDelete(int id)
+    {
+        var confirmed = await JsRuntime.InvokeAsync<bool>("confirm",
+        "Вы уверены, что хотите удалить?");
+        if (confirmed)
+            await DeletePrompt(id);
+    }
 }

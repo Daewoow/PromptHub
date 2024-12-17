@@ -19,20 +19,26 @@
     </div>
     <div>
         <label for="description">Description: </label>
-        <InputText  id="description" class="form-control" @bind-Value="_newUiPrompt.Description" />
+        <InputText id="description" class="form-control" @bind-Value="_newUiPrompt.Description" />
+    </div>
+    <div>
+        <label>
+            Публичный?
+            <InputCheckbox @bind-Value="_newUiPrompt.IsPublic" />
+        </label>
     </div>
 
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn btn-primary">Create</button>
 </EditForm>
 
 @code {
     private UIPrompt _newUiPrompt = new();
     private EditContext editContext;
     private string name;
-    
-    protected override async Task OnAfterRenderAsync(bool firstAlert)
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstAlert)
+        if (firstRender)
         {
             var token = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", "jwtToken");
             var handler = new JwtSecurityTokenHandler();

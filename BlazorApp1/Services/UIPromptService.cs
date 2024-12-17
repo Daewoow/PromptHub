@@ -14,7 +14,7 @@ public class UIPromptService(HttpClient httpClient)
         => await httpClient.PostAsJsonAsync("todo", item);
  
     public async Task UpdatePromptAsync(UIPrompt item)
-        => await httpClient.PutAsJsonAsync($"todo/{item.PromptId}", item);
+        => await httpClient.PutAsJsonAsync($"todo", item);
  
     public async Task DeletePromptAsync(int id)
         =>  await httpClient.DeleteAsync($"todo/{id}");

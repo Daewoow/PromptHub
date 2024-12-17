@@ -32,7 +32,9 @@ public class PromptsCrudRepository
         dbPrompt.NameOfUser = prompt.NameOfUser;
         dbPrompt.NameOfPrompt = prompt.NameOfPrompt;
         dbPrompt.Description = prompt.Description;
-        dbPrompt.TimeOfUpdate = DateTime.Now;
+        dbPrompt.TimeOfUpdate = DateTimeOffset.UtcNow;
+        dbPrompt.IsPublic = prompt.IsPublic;
+        Console.Write("Update is Good");
         await db.SaveChangesAsync();
     }
 

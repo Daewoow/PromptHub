@@ -34,6 +34,36 @@ else
 
         <button class="btn btn-primary" type="submit">Save</button>
     </EditForm>
+
+    <h4 class="mt-4">History of Changes</h4>
+    @if (_editUiPrompt.History != null && _editUiPrompt.History.Any())
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>NameOfUser</th>
+                    <th>NameOfPrompt</th>
+                    <th>Description</th>
+                    <th>TimeOfUpdate</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var historyItem in _editUiPrompt.History)
+                {
+                    <tr>
+                        <td>@historyItem.NameOfUser</td>
+                        <td>@historyItem.NameOfPrompt</td>
+                        <td>@historyItem.Description</td>
+                        <td>@historyItem.TimeOfUpdate</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No history available.</p>
+    }
 }
 
 @code {
@@ -48,7 +78,20 @@ else
 
     private async Task HandleValidSubmit()
     {
+        if (_editUiPrompt.History == null)
+        {
+            _editUiPrompt.History = new List<UIPrompt>();
+        }
+        _editUiPrompt.History.Add(new UIPrompt
+        {
+            NameOfUser = _editUiPrompt.NameOfUser,
+            NameOfPrompt = _editUiPrompt.NameOfPrompt,
+            Description = _editUiPrompt.Description,
+            TimeOfUpdate = _editUiPrompt.TimeOfUpdate
+        });
+
         _editUiPrompt.TimeOfUpdate = DateTime.Now;
+
         await UiPromptService.UpdatePromptAsync(_editUiPrompt);
         NavigationManager.NavigateTo("/promptslist");
     }

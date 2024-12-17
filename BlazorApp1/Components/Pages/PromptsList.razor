@@ -1,86 +1,122 @@
 ﻿@page "/promptslist"
+@using System.Globalization
+@using System.IdentityModel.Tokens.Jwt
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize]
 @using BlazorApp1.Models
+@inject IJSRuntime JsRuntime
 @using BlazorApp1.Services
 @inject UIPromptService UiPromptService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
-<h3>UIPrompts List</h3>
+<h3>Prompts List</h3>
 
-@if (PromptItems == null)
+<div class="mb-3">
+    <label for="searchInput" class="form-label">Search:</label>
+    <input id="searchInput" class="form-control" @bind="searchQuery" placeholder="Enter prompt name..." />
+</div>
+
+@if (_promptItems == null)
 {
-<p><em>Loading...</em></p>
+    <p><em>Loading...</em></p>
 }
 else
 {
-<table class="table table-striped">
-    <thead>
-    <tr>
-        <th>NameOfUIUser</th>
-        <th>NameOfTitle</th>
-        <th>TimeOfUpdate</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    @if (PromptItems == null)
-    {
-        <tr>
-            <td colspan="4" class="text-center">Loading...</td>
-        </tr>
-    }
-    else if (PromptItems.Count == 0)
-    {
-        <tr>
-            <td colspan="4" class="text-center">No prompts available.</td>
-        </tr>
-    }
-    else
-    {
-        @foreach (var prompt in PromptItems)
-        {
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>@prompt.NameOfUser</td>
-                <td>@prompt.NameOfPrompt</td>
-                <td>@prompt.TimeOfUpdate.ToString()</td>
-                <td>
-                    <button class="bth btn-success btn-sm" @onclick="() => OpenPrompt(prompt.PromptId)">Open</button>
-                    <button class="btn btn-info btn-sm" @onclick="() => EditPrompt(prompt.PromptId)">Edit</button>
-                    <button class="btn btn-danger btn-sm" @onclick="() => DeletePrompt(prompt.PromptId)">Delete</button>
-                </td>
+                <th>Имя пользователя</th>
+                <th>Имя промпта</th>
+                <th>Время обновления</th>
+                <th>Опции</th>
             </tr>
-        }
-    }
-    </tbody>
-</table>
-<button class="btn btn-info" @onclick="CreatePrompt">Create</button>
+        </thead>
+        <tbody>
+            @if (_promptItems == null)
+            {
+                <tr>
+                    <td colspan="4" class="text-center">Loading...</td>
+                </tr>
+            }
+            else if (_promptItems.Count == 0 || !filteredPrompts.Any())
+            {
+                <tr>
+                    <td colspan="4" class="text-center">No prompts available.</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var prompt in filteredPrompts.Where(p => p.NameOfPrompt == _name || p.IsPublic))
+                {
+                    <tr>
+                        <td>@prompt.NameOfUser</td>
+                        <td>@prompt.NameOfPrompt</td>
+                        <td>@prompt.TimeOfUpdate.ToString(CultureInfo.InvariantCulture)</td>
+                        <td>
+                            <button class="btn btn-success btn-sm" @onclick="() => OpenPrompt(prompt.PromptId)">Open</button>
+                            <button class="btn btn-info btn-sm" @onclick="() => EditPrompt(prompt.PromptId)">Edit</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => ConfirmDelete(prompt.PromptId)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <button class="btn btn-info" @onclick="CreatePrompt">Create</button>
 }
 
 @code 
 {
-    private List<UIPrompt> PromptItems;
+    private string _name;
+    private List<UIPrompt> _promptItems;
+    private string searchQuery = string.Empty;
+
+    private IEnumerable<UIPrompt> filteredPrompts => 
+        string.IsNullOrWhiteSpace(searchQuery) 
+            ? _promptItems 
+            : _promptItems.Where(p => 
+                p.NameOfPrompt.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                p.NameOfUser.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {
-        PromptItems = await UiPromptService.ReadAllAsync();
+        _promptItems = await UiPromptService.ReadAllAsync();
     }
-
-    private void CreatePrompt()
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        NavigationManager.NavigateTo("/createprompt");
+        if (firstRender)
+        {
+            var token = await JsRuntime.InvokeAsync<string?>("localStorage.getItem", "jwtToken");
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(token);
+            var nameStringArray = jsonToken.Claims
+                .First().ToString()
+                .Split(" ")
+                .Skip(1);
+
+            _name = string.Join(" ", nameStringArray);
+        }
     }
 
-    private void OpenPrompt(int id)
+    private void CreatePrompt() => NavigationManager.NavigateTo("/createprompt");
+
+    private void OpenPrompt(int id) => NavigationManager.NavigateTo($"/openitem/{id}");
+
+    private void EditPrompt(int id) => NavigationManager.NavigateTo($"/edititem/{id}");
+
+    private async Task DeletePrompt(int id)
     {
-        NavigationManager.NavigateTo($"/openitem/{id}");
+        await UiPromptService.DeletePromptAsync(id);
+        _promptItems = await UiPromptService.ReadAllAsync();
     }
 
-    private void EditPrompt(int id)
+    private async Task ConfirmDelete(int id)
     {
-        NavigationManager.NavigateTo($"/edititem/{id}");
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", 
+            "Вы уверены, что хотите удалить?");
+        if (confirmed)
+            await DeletePrompt(id);
     }
-
-    private async Task DeletePrompt(int id) => await UiPromptService.DeletePromptAsync(id);
 }
