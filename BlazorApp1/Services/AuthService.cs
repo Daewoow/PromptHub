@@ -25,10 +25,7 @@ public class AuthService
         var response = await _httpClient.PostAsJsonAsync("api/auth/login", credentials);
         
         if (!response.IsSuccessStatusCode)
-        {
-            var er = await response.Content.ReadAsStringAsync();
             return false;
-        }
         
         var result = await response.Content.ReadFromJsonAsync<JwtResponse>();
 
@@ -36,13 +33,9 @@ public class AuthService
             return false;
         
         await _jsRuntime.InvokeVoidAsync("localStorage.setItem", TokenKey, result.Token);
-        
-        Console.WriteLine(result.Token);
 
         _httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, result.Token);
-        
-        Console.WriteLine($"Authorization Header Set: {_httpClient.DefaultRequestHeaders.Authorization}");
 
         return true;
     }
