@@ -11,5 +11,4 @@ public class UIPrompt
 
     [Required] public bool IsPublic { get; set; } = true;
     public DateTimeOffset TimeOfUpdate { get; set; }
-    public List<UIPrompt> History { get; set; }
 }

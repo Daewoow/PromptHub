@@ -34,7 +34,6 @@ public class PromptsCrudRepository
         dbPrompt.Description = prompt.Description;
         dbPrompt.TimeOfUpdate = DateTimeOffset.UtcNow;
         dbPrompt.IsPublic = prompt.IsPublic;
-        Console.Write("Update is Good");
         await db.SaveChangesAsync();
     }
 

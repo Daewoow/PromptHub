@@ -82,7 +82,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-    _promptItems = await UiPromptService.ReadAllAsync();
+        _promptItems = await UiPromptService.ReadAllAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -101,20 +101,11 @@ else
         }
     }
 
-    private void CreatePrompt()
-    {
-        NavigationManager.NavigateTo("/createprompt");
-    }
+    private void CreatePrompt() => NavigationManager.NavigateTo("/createprompt");
 
-    private void OpenPrompt(int id)
-    {
-        NavigationManager.NavigateTo($"/openitem/{id}");
-    }
+    private void OpenPrompt(int id) => NavigationManager.NavigateTo($"/openitem/{id}");
 
-    private void EditPrompt(int id)
-    {
-        NavigationManager.NavigateTo($"/edititem/{id}");
-    }
+    private void EditPrompt(int id) => NavigationManager.NavigateTo($"/edititem/{id}");
 
     private async Task DeletePrompt(int id)
     {

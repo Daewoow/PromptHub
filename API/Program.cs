@@ -38,6 +38,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+});
 builder.Services.AddAuthenticationCore();
 
 var app = builder.Build();
@@ -75,10 +79,31 @@ app.MapPost("/api/auth/register", async context =>
         return;
     }
 
+    var role = new[] { "User" };
+    if (new[] { "Лера", "Максим", "Саша" }.Contains(request.Username))
+    {
+        role = new[] { "Admin" };
+    }
+
+    var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, request.Username),
+        new Claim(ClaimTypes.Role, role[0]) 
+    };
+    
     new UsersCrudRepository().SaveUser(request.Username, request.Password);
 
+    var jwt = new JwtSecurityToken(
+        issuer: "MyAuthServer",
+        audience: "MyAuthClient",
+        claims: claims,
+        expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)),
+        signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes
+            ("mysupersecret_secretsecretsecretkey!123")), SecurityAlgorithms.HmacSha256));
+    var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
     context.Response.StatusCode = StatusCodes.Status200OK;
-    await context.Response.WriteAsync("Пользователь зарегистрирован успешно.");
+    await context.Response.WriteAsJsonAsync(new { Token = encodedJwt });
 });
 
 app.MapPost("/api/auth/login", async context =>

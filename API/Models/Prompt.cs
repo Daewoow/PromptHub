@@ -1,4 +1,5 @@
 ﻿namespace WebApplication1;
+
 public class Prompt
 {
     public int PromptId { get; set; }

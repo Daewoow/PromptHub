@@ -1,8 +1,15 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using System.IdentityModel.Tokens.Jwt
+@inject IJSRuntime JsRuntime
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Amazing project</a>
     </div>
 </div>
+
+
 
 <input type="checkbox" title="Navigation menu" class="navbar-toggler"/>
 
@@ -24,10 +31,6 @@
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="/promptslist">UIPrompts List</NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/adminpromptslist">[ADMIN]Prompts List</NavLink>
         </div>
     </nav>
 </div>

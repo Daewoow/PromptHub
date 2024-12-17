@@ -5,6 +5,7 @@
 @using BlazorApp1.Services
 @inject UIPromptService UiPromptService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 <h3>Edit UIPrompt</h3>
@@ -36,7 +37,7 @@ else
     </EditForm>
 
     <h4 class="mt-4">History of Changes</h4>
-    @if (_editUiPrompt.History != null && _editUiPrompt.History.Any())
+    @if (_history.Any())
     {
         <table class="table table-striped">
             <thead>
@@ -48,7 +49,7 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var historyItem in _editUiPrompt.History)
+                @foreach (var historyItem in _history)
                 {
                     <tr>
                         <td>@historyItem.NameOfUser</td>
@@ -70,29 +71,67 @@ else
     [Parameter]
     public string Id { get; set; }
     private UIPrompt _editUiPrompt;
+    private List<PromptHistory> _history = new();
 
     protected override async Task OnInitializedAsync()
     {
         _editUiPrompt = await UiPromptService.ReadPromptAsync(int.Parse(Id));
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Загрузка истории из localStorage после первой отрисовки
+            await LoadHistoryFromLocalStorage();
+            StateHasChanged(); // Уведомляем Blazor о необходимости перерисовки
+        }
+    }
+
     private async Task HandleValidSubmit()
     {
-        if (_editUiPrompt.History == null)
-        {
-            _editUiPrompt.History = new List<UIPrompt>();
-        }
-        _editUiPrompt.History.Add(new UIPrompt
+        // Сохранение текущего состояния в историю
+        var historyItem = new PromptHistory
         {
             NameOfUser = _editUiPrompt.NameOfUser,
             NameOfPrompt = _editUiPrompt.NameOfPrompt,
             Description = _editUiPrompt.Description,
-            TimeOfUpdate = _editUiPrompt.TimeOfUpdate
-        });
+            TimeOfUpdate = DateTimeOffset.UtcNow
+        };
 
+        _history.Add(historyItem);
+
+        // Сохранение истории в localStorage
+        await SaveHistoryToLocalStorage();
+
+        // Обновление промпта на сервере
         _editUiPrompt.TimeOfUpdate = DateTime.Now;
-
         await UiPromptService.UpdatePromptAsync(_editUiPrompt);
         NavigationManager.NavigateTo("/promptslist");
+    }
+
+    private async Task SaveHistoryToLocalStorage()
+    {
+        // Сериализация истории в JSON и сохранение в localStorage
+        var historyJson = System.Text.Json.JsonSerializer.Serialize(_history);
+        await JSRuntime.InvokeVoidAsync("localStorage.setItem", "promptHistory", historyJson);
+    }
+
+    private async Task LoadHistoryFromLocalStorage()
+    {
+        // Загрузка истории из localStorage
+        var historyJson = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "promptHistory");
+        if (!string.IsNullOrEmpty(historyJson))
+        {
+            _history = System.Text.Json.JsonSerializer.Deserialize<List<PromptHistory>>(historyJson);
+        }
+    }
+
+    private class PromptHistory
+    {
+        public string NameOfUser { get; set; }
+        public string NameOfPrompt { get; set; }
+        public string Description { get; set; }
+        public DateTimeOffset TimeOfUpdate { get; set; }
     }
 }
