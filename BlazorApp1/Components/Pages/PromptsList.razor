@@ -55,8 +55,6 @@ else
                         <td>@prompt.TimeOfUpdate.ToString(CultureInfo.InvariantCulture)</td>
                         <td>
                             <button class="btn btn-success btn-sm" @onclick="() => OpenPrompt(prompt.PromptId)">Open</button>
-                            <button class="btn btn-info btn-sm" @onclick="() => EditPrompt(prompt.PromptId)">Edit</button>
-                            <button class="btn btn-danger btn-sm" @onclick="() => ConfirmDelete(prompt.PromptId)">Delete</button>
                         </td>
                     </tr>
                 }

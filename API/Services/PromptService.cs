@@ -30,4 +30,9 @@ public class PromptService(PromptsCrudRepository repository, CacheService cacheS
         await cacheService.Invalidate($"Prompt:{id}");
         await cacheService.Invalidate("Prompt:all");
     }
+
+    public async Task<string> ReadDescriptionByIdAsync(int id)
+    {
+        return await repository.ReadPromptDescriptionById(id);
+    }
 }

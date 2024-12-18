@@ -158,6 +158,9 @@ app.MapPut("api/todo", async ([FromBody] Prompt item, [FromServices] PromptServi
  
 app.MapGet("api/todo/{id}", async (string id, [FromServices] PromptService toDoService) 
     => await toDoService.ReadByIdAsync(int.Parse(id)));
+
+app.MapGet("api/todo/body/{id}", async (string id, [FromServices] PromptService toDoService) 
+    => await toDoService.ReadDescriptionByIdAsync(26));
  
 app.MapDelete("api/todo/{id}", async (string id, [FromServices] PromptService toDoService)
     => await toDoService.DeleteAsync(int.Parse(id)));

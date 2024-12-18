@@ -44,4 +44,13 @@ public class PromptsCrudRepository
         db.Prompts.Remove(dbPrompt);
         await db.SaveChangesAsync();
     }
+
+    public async Task<string> ReadPromptDescriptionById(int id)
+    {
+        await using var db = new ApplicationContext();
+        var desc = await db.Prompts.Where(p => p.PromptId == id)
+            .Select(p => p.Description)
+            .FirstOrDefaultAsync();
+        return desc;
+    }
 }

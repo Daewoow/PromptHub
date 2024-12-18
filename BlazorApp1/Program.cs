@@ -2,9 +2,7 @@ using BlazorApp1.Components;
 using BlazorApp1.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.JSInterop;
 
 var builder = WebApplication.CreateBuilder(args);
 
